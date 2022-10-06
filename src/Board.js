@@ -1,3 +1,4 @@
+
 // This file is a Backbone Model (don't worry about what that means)
 // It's part of the Board Visualizer
 // The only portions you need to work on are the helper functions (below)
@@ -80,35 +81,35 @@
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
       var board = this.rows();
+      // assign input row to a variable
       var conflictRow = board[rowIndex];
       var count = 0;
+      // iterate through the input row
       for (var i = 0; i < conflictRow.length; i++) {
+        // if a piece exists on the current space
         if (conflictRow[i] === 1) {
+          // increment count
           count++;
         }
       }
+      // after iteration, if count is greater than one, a conflict exists
       if (count > 1) {
         return true;
       }
-      return false; // fixme
+      return false;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
       var board = this.rows();
+      // iterate through the board, run conflict detection function on each row
       for (var i = 0; i < board.length; i++) {
-        var count = 0;
-        var currentRow = board[i];
-        for (var j = 0; j < currentRow.length; j++) {
-          if (currentRow[j] === 1) {
-            count++;
-            if (count > 1) {
-              return true;
-            }
-          }
+        // if a conflict is detected at any row, return true
+        if (this.hasRowConflictAt(i)) {
+          return true;
         }
       }
-      return false; // fixme
+      return false;
     },
 
 
@@ -120,23 +121,31 @@
     hasColConflictAt: function(colIndex) {
       var board = this.rows();
       var count = 0;
+      // iterate through the board
       for (var i = 0; i < board.length; i++) {
+        // check for pieces at each space in the given column
         if (board[i][colIndex] === 1) {
+          // if a piece is present, increment count
           count++;
         }
+        // after iteration, if count is greater than one, a conflict exists
       } if (count > 1) {
         return true;
       }
-      return false; // fixme
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
       var board = this.rows();
+      // iterate through the board, run conflict detection function on each column
       for (var i = 0; i < board.length; i++) {
-        return this.hasColConflictAt(i);
+        // if a conflict is detected at any column, return true
+        if (this.hasColConflictAt(i)) {
+          return true;
+        }
       }
-      return false; // fixme
+      return false;
     },
 
 
@@ -146,12 +155,54 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+
+      var board = this.rows();
+      // instatiate count, row, and column variables
+      var count = 0;
+      var row, column;
+      // identify starting space coordinates
+      if (majorDiagonalColumnIndexAtFirstRow >= 0) {
+        row = 0;
+        column = majorDiagonalColumnIndexAtFirstRow;
+      } else if (majorDiagonalColumnIndexAtFirstRow < 0) {
+        row = majorDiagonalColumnIndexAtFirstRow * (-1);
+        column = 0;
+      }
+      // determine the number of iterations needed
+      var numberOfIterations = board.length - row - column;
+      // iterate through diagonal, checking for pieces
+      for (var i = 0; i < numberOfIterations; i++) {
+        // if a piece is found, increase count by 1
+        if (board[row][column] === 1) {
+          count++;
+        }
+        // increase column and row to check next space in diagonal
+        column++;
+        row++;
+      }
+      // check count after all spaces in diagonal have been checked
+      if (count > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var board = this.rows();
+      // determine the number of diagonals based on the board length
+      var boardLength = board.length - 1;
+      // convert to negative number to account for "negative" diagonals
+      var currentDiagonal = boardLength * -1;
+      // run callback on each diagonal to find conflicts
+      while (currentDiagonal <= boardLength) {
+        if (this.hasMajorDiagonalConflictAt(currentDiagonal)) {
+          return true;
+        } else {
+          currentDiagonal++;
+        }
+      }
+      return false;
     },
 
 
@@ -161,12 +212,41 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+
+      var board = this.rows();
+      var count = 0;
+      var row = 0;
+      var column = minorDiagonalColumnIndexAtFirstRow;
+      for (var i = 0; i < board.length; i++) {
+        if (board[row][column] === 1) {
+          count++;
+        }
+        column--;
+        row++;
+      }
+      if (count > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var board = this.rows();
+      // determine board length
+      var boardLength = board.length - 1;
+      // multiply by 2 to get total number of diagonals
+      var totalDiagonals = boardLength * 2;
+      var count = 0;
+      // run callback on each diagonal to find conflicts
+      while (count <= totalDiagonals) {
+        if (this.hasMinorDiagonalConflictAt(count)) {
+          return true;
+        } else {
+          count++;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
